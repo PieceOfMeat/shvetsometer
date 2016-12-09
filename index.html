@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Shvets-o-Meter</title>
+
+    <style>
+        body {
+            font-family: sans-serif;
+        }
+
+        h3 {
+            text-align: center;
+        }
+
+        .highcharts-credits {
+            display: none;
+        }
+
+        #container {
+            height: 400px;
+            width: 820px;
+            margin: 0 auto;
+            clear: both;
+        }
+
+        #chart {
+            width: 350px;
+            float: left;
+        }
+
+        #picture {
+            height: 350px;
+            max-width: 467px;
+        }
+
+        #descr {
+            max-width: 650px;
+            margin: 0 auto;
+        }
+    </style>
+
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/highcharts-more.js"></script>
+
+</head>
+<body>
+    <h3>Измерение загадочности по шкале Швеца</h3>
+
+    <div id="container">
+        <div id="chart"></div>
+        <img id="picture" />
+    </div>
+    <div id="descr">
+        <p>Загадочность поста, вызванная его намеренной краткостью, измеряется в Швецах.</p>
+        <p>1 Швец приблизительно равен 1 минуте размышлений над недавними новостями в ленте Фейсбука и проверкой предположений в Google.</p>
+    </div>
+
+    <script>
+        document.body.onload = function() {
+            'use strict';
+
+            var x = parseFloat(getParameterByName('x'));
+            if (!x && x !== 0) x = Math.random() * 10;
+            if (x < 0) x = 0;
+            if (x > 10) x = 10;
+
+            var duration = 50 + (10 - x) / 10 * 550;
+            setPicture(x);
+
+            Highcharts.chart('chart', {
+                chart: {
+                    type: 'gauge',
+                    plotBackgroundColor: null,
+                    plotBackgroundImage: null,
+                    plotBorderWidth: 0,
+                    plotShadow: false
+                },
+
+                title: {
+                    text: null
+                },
+
+                pane: {
+                    startAngle: -150,
+                    endAngle: 150,
+                    background: [{
+                        backgroundColor: {
+                            linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+                            stops: [
+                                [0, '#FFF'],
+                                [1, '#333']
+                            ]
+                        },
+                        borderWidth: 0,
+                        outerRadius: '109%'
+                    }, {
+                        backgroundColor: {
+                            linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+                            stops: [
+                                [0, '#333'],
+                                [1, '#FFF']
+                            ]
+                        },
+                        borderWidth: 1,
+                        outerRadius: '107%'
+                    }, {
+                        // default background
+                    }, {
+                        backgroundColor: '#DDD',
+                        borderWidth: 0,
+                        outerRadius: '105%',
+                        innerRadius: '103%'
+                    }]
+                },
+
+                // the value axis
+                yAxis: {
+                    min: 0,
+                    max: 10,
+
+                    minorTickInterval: 'auto',
+                    minorTickWidth: 1,
+                    minorTickLength: 7,
+                    minorTickPosition: 'inside',
+                    minorTickColor: '#666',
+
+                    tickPixelInterval: 30,
+                    tickWidth: 2,
+                    tickPosition: 'inside',
+                    tickLength: 15,
+                    tickColor: '#666',
+                    labels: {
+                        step: 2,
+                        rotation: 'auto'
+                    },
+                    title: {
+                        text: 'Shvets-O-Meter'
+                    },
+                    plotBands: [{
+                        from: 0,
+                        to: 2.5,
+                        color: '#55BF3B' // green
+                    }, {
+                        from: 2.5,
+                        to: 5,
+                        color: '#93b75f'
+                    }, {
+                        from: 5,
+                        to: 7.5,
+                        color: '#DDDF0D'
+                    }, {
+                        from: 7.5,
+                        to: 10,
+                        color: '#DF5353'
+                    }]
+                },
+
+                series: [{
+                    name: 'Загадочность: ',
+                    data: [x],
+                    tooltip: {
+                        valueSuffix: ' Shvets\'s'
+                    }
+                }]}, function (chart) {
+                    if (chart.renderer.forExport)
+                        return;
+
+                    setInterval(function() {
+                        var point = chart.series[0].points[0],
+                            inc = Math.random() / 2.5 - 0.2,
+                            newVal = x + inc;
+
+                        newVal = Math.round( newVal * 100 ) / 100;
+
+                        point.update(newVal, false);
+                        chart.redraw({
+                            duration: duration
+                        });
+
+                    }, duration);
+                }
+            );
+        };
+
+        function getParameterByName(name) {
+            var match = (new RegExp('[?&]' + name + '=([^&]*)')).exec(window.location.search);
+            return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
+        }
+
+        function setPicture(x) {
+            var img = document.getElementById('picture');
+            var i = Math.trunc(x / 2) + 1;
+            if (i > 5) i = 5;
+
+            img.src = 'img/' + i + '.jpg';
+        }
+    </script>
+</body>
+</html>
